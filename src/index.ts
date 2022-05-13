@@ -6,6 +6,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 app.use("/", routes);
-app.listen(5000, () => {
-  console.log("🚀 Server ready at: http://localhost:5000");
+app.listen(6000, () => {
+  console.log("🚀 Server ready at: http://localhost:6000");
 });
+
+export default app;

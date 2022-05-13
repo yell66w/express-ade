@@ -10,7 +10,7 @@ chaitest.use(chaiHttp);
 const expect = chaitest.expect;
 process.env.NODE_ENV = "test";
 
-const password =
+export const password =
   "$argon2i$v=19$m=4096,t=3,p=1$h/anh+zg2//T/gOBnjK18A$56I3Hh2dXlZ9U1rrisjBFAxl51eTSpzzQal+Qo52ePo";
 
 describe("Auth", () => {
@@ -144,6 +144,7 @@ describe("Auth", () => {
         .post("/auth/sign-in")
         .send({ username: "demotest", password: "password" });
       assert.equal(res.status, 200);
+      res.body.should.have.property("token");
     });
   });
 });

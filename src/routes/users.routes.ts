@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import UserController from "../controllers/UserController";
+import checkRole from "../middlewares/checkRole";
 const router = Router();
-
 router.get("/", UserController.getAll);
 router.get("/:id", UserController.getOne);
 router.post(
   "/",
+  checkRole("admin"),
   body("username").isString().notEmpty(),
   body("email").isString().isEmail().notEmpty(),
   body("password").isString().notEmpty(),
@@ -20,6 +21,7 @@ router.post(
 );
 router.put(
   "/:id",
+  checkRole("admin"),
   body("username").isString().optional(),
   body("email").isString().isEmail().optional(),
   body("password").isString().optional(),
@@ -33,8 +35,15 @@ router.put(
 );
 router.delete(
   "/multiple",
+  checkRole("admin"),
+
   body("*.*").isInt().optional().toInt(),
   UserController.deleteMany
 );
-router.delete("/:id", UserController.delete);
+router.delete(
+  "/:id",
+  checkRole("admin"),
+
+  UserController.delete
+);
 export default router;

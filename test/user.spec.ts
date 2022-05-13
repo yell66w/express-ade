@@ -72,6 +72,15 @@ describe("Users API", () => {
             done();
           });
       });
+      it("it should not GET all the users", (done) => {
+        chaitest
+          .request(server)
+          .get("/users")
+          .end((err: any, res: any) => {
+            res.should.have.status(401);
+            done();
+          });
+      });
     });
     describe("/POST user", () => {
       it("it should not POST a user without email field", (done) => {
@@ -134,7 +143,7 @@ describe("Users API", () => {
             fname: "Test",
             lname: "Lname Test",
             address: "test address",
-            password: "password",
+            password,
             phone: "0999-999-999",
             postcode: "4444",
             email: "demotest@gmail.com",
@@ -171,7 +180,7 @@ describe("Users API", () => {
             fname: "Test",
             lname: "Lname Test",
             address: "test address",
-            password: "password",
+            password,
             phone: "0999-999-999",
             postcode: "4444",
             email: "demoget@gmail.com",
@@ -205,7 +214,7 @@ describe("Users API", () => {
             fname: "Test",
             lname: "Lname Test",
             address: "test address",
-            password: "password",
+            password,
             phone: "0999-999-999",
             postcode: "4444",
             email: "dempupdate@gmail.com",
@@ -242,7 +251,7 @@ describe("Users API", () => {
             fname: "Test",
             lname: "Lname Test",
             address: "test address",
-            password: "password",
+            password,
             phone: "0999-999-999",
             postcode: "4444",
             email: "demodelete@gmail.com",
@@ -252,6 +261,58 @@ describe("Users API", () => {
           .request(server)
           .delete("/users/" + user.id)
           .set({ Authorization: `Bearer ${token}` });
+        assert.equal(res.status, 200);
+      });
+      it("it should not DELETE a user", async () => {
+        const user = await prisma.user.create({
+          data: {
+            username: "demodelete99",
+            fname: "Test",
+            lname: "Lname Test",
+            address: "test address",
+            password,
+            phone: "0999-999-999",
+            postcode: "4444",
+            email: "demodelete99@gmail.com",
+          },
+        });
+        const res = await chaitest.request(server).delete("/users/" + user.id);
+        assert.equal(res.status, 401);
+      });
+    });
+    // DELETE MANY
+    describe("/DELETE MANY user", () => {
+      it("it should DELETE MANY users", async () => {
+        const user1 = await prisma.user.create({
+          data: {
+            username: "manydemodelete1",
+            email: "manydemodelete1@gmail.com",
+            fname: "Test",
+            lname: "Lname Test",
+            address: "test address",
+            password,
+            phone: "0999-999-999",
+            postcode: "4444",
+          },
+        });
+        const user2 = await prisma.user.create({
+          data: {
+            username: "manydemodelete2",
+            email: "manydemodelete2@gmail.com",
+            fname: "Test",
+            lname: "Lname Test",
+            address: "test address",
+            password,
+            phone: "0999-999-999",
+            postcode: "4444",
+          },
+        });
+        const res = await chaitest
+          .request(server)
+          .delete("/users/multiple")
+          .send([user1.id, user2.id])
+          .set({ Authorization: `Bearer ${token}` });
+        res.body.should.have.property("count");
         assert.equal(res.status, 200);
       });
     });
